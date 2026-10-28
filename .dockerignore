@@ -1,0 +1,11 @@
+node_modules
+.data
+.git
+.env
+.env.*
+!.env.example
+dist
+test-results
+playwright-report
+deploy/k8s/secret.env
+*.log

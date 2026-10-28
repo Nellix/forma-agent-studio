@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: agent-studio
+resources:
+  - namespace.yaml
+  - postgres.yaml
+  - application.yaml
+configMapGenerator:
+  - name: studio-config
+    literals:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=3000
+      - WORKER_HEALTH_PORT=3001
+      - DEMO_MODE=true
+      - EMBEDDED_WORKER=false
+      - COOKIE_SECURE=false
+      - MAX_CONCURRENT_RUNS=4
+      - HTTP_ALLOWED_HOSTS=
+secretGenerator:
+  - name: studio-secrets
+    envs: [secret.env]
+images:
+  - name: agent-studio
+    newName: agent-studio
+    newTag: 0.1.0

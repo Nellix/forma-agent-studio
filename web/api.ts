@@ -1,0 +1,4 @@
+export async function api<T=any>(path:string,options:RequestInit={}):Promise<T>{const response=await fetch('/api'+path,{...options,headers:{'Content-Type':'application/json',...options.headers}});const data=await response.json();if(!response.ok)throw new Error(data.error??`Request failed (${response.status})`);return data;}
+export const post=<T=any>(path:string,body:any={})=>api<T>(path,{method:'POST',body:JSON.stringify(body)});
+export const put=<T=any>(path:string,body:any)=>api<T>(path,{method:'PUT',body:JSON.stringify(body)});
+export function download(name:string,value:any){const url=URL.createObjectURL(new Blob([JSON.stringify(value,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}

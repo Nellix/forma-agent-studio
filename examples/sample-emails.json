@@ -1,0 +1,34 @@
+{
+  "emails": [
+    {
+      "id": "e-101",
+      "sender": "maya@northstar.example",
+      "subject": "Launch review — decision needed today",
+      "body": "Please approve the revised launch checklist before 16:00 today. The accessibility review is complete, but we need your decision on the rollout date.",
+      "receivedAt": "2026-10-28T08:15:00Z"
+    },
+    {
+      "id": "e-102",
+      "sender": "leo@northstar.example",
+      "subject": "Customer feedback: October roundup",
+      "body": "Customers appreciate the new onboarding. Three teams requested CSV exports. No immediate action is required; we can discuss this at our next planning session.",
+      "receivedAt": "2026-10-28T09:00:00Z"
+    },
+    {
+      "id": "e-103",
+      "sender": "maya@northstar.example",
+      "subject": "Project Atlas — notes and next steps",
+      "body": "Please review the architecture notes and send feedback by Friday. The team is waiting on a final owner for the data migration.",
+      "receivedAt": "2026-10-28T09:30:00Z"
+    },
+    {
+      "id": "e-104",
+      "sender": "ops@northstar.example",
+      "subject": "Urgent: staging certificate expires tomorrow",
+      "body": "The staging certificate expires tomorrow. Please coordinate renewal with infrastructure today to avoid interruptions. Production is unaffected.",
+      "receivedAt": "2026-10-28T10:10:00Z"
+    }
+  ],
+  "length": "medium",
+  "language": "English"
+}

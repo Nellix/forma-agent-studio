@@ -1,0 +1,56 @@
+name: agent-studio
+services:
+  postgres:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: agentstudio
+      POSTGRES_USER: studio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run npm run secrets first}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U studio -d agentstudio']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  api:
+    image: agent-studio:0.1.0
+    build: .
+    ports:
+      - '127.0.0.1:3000:3000'
+    environment: &app-environment
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3000
+      DATABASE_URL: postgresql://studio:${POSTGRES_PASSWORD}@postgres:5432/agentstudio
+      STUDIO_ADMIN_TOKEN: ${STUDIO_ADMIN_TOKEN:?Run npm run secrets first}
+      STUDIO_RUNNER_TOKEN: ${STUDIO_RUNNER_TOKEN:?Run npm run secrets first}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Run npm run secrets first}
+      DEMO_MODE: ${DEMO_MODE:-true}
+      EMBEDDED_WORKER: 'false'
+      COOKIE_SECURE: 'false'
+      HTTP_ALLOWED_HOSTS: ${HTTP_ALLOWED_HOSTS:-}
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+  worker:
+    image: agent-studio:0.1.0
+    build: .
+    command: [node, dist/server/main.js, --worker]
+    environment: *app-environment
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  postgres-data:

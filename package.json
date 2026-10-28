@@ -1,0 +1,55 @@
+{
+  "name": "agent-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "tsx server/main.ts",
+    "dev:web": "vite --host 127.0.0.1",
+    "worker": "tsx server/main.ts --worker",
+    "build": "tsc --noEmit && vite build && tsc -p tsconfig.server.json",
+    "start": "node dist/server/main.js",
+    "start:worker": "node dist/server/main.js --worker",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "licenses": "node scripts/licenses.mjs",
+    "secrets": "node scripts/secrets.mjs",
+    "demo": "node scripts/local-demo.mjs"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.13",
+    "@xyflow/react": "12.12.0",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "cron-parser": "5.10.2",
+    "dotenv": "18.0.9",
+    "express": "5.3.0",
+    "express-rate-limit": "8.7.1",
+    "helmet": "8.3.0",
+    "lucide-react": "1.63.0",
+    "pg": "8.23.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/express": "5.0.6",
+    "@types/node": "26.6.5",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "esbuild": "0.28.2",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vite": "8.3.5",
+    "vitest": "5.0.5",
+    "yaml": "2.9.1"
+  }
+}

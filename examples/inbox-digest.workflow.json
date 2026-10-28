@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "name": "Inbox Digest",
+  "description": "From incoming emails to a thoughtful daily briefing.",
+  "inputSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "emails"
+    ],
+    "properties": {
+      "emails": {
+        "type": "array",
+        "maxItems": 200,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "sender",
+            "subject",
+            "body",
+            "receivedAt"
+          ],
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "sender": {
+              "type": "string"
+            },
+            "subject": {
+              "type": "string"
+            },
+            "body": {
+              "type": "string",
+              "maxLength": 50000
+            },
+            "receivedAt": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "length": {
+        "type": "string",
+        "enum": [
+          "short",
+          "medium",
+          "detailed"
+        ]
+      },
+      "language": {
+        "type": "string"
+      }
+    }
+  },
+  "outputSchema": {
+    "type": "object"
+  },
+  "modelId": null,
+  "nodes": [
+    {
+      "id": "trigger",
+      "type": "webhook",
+      "name": "Receive emails",
+      "position": {
+        "x": 70,
+        "y": 180
+      },
+      "config": {},
+      "retries": 0,
+      "timeoutMs": 120000,
+      "version": 1
+    },
+    {
+      "id": "normalize",
+      "type": "map",
+      "name": "Prepare inbox",
+      "position": {
+        "x": 340,
+        "y": 180
+      },
+      "config": {
+        "value": {
+          "emails": {
+            "$ref": "input.emails"
+          },
+          "length": "medium",
+          "language": "English"
+        }
+      },
+      "retries": 0,
+      "timeoutMs": 120000,
+      "version": 1
+    },
+    {
+      "id": "summarize",
+      "type": "agent",
+      "name": "Email Summary",
+      "position": {
+        "x": 610,
+        "y": 180
+      },
+      "config": {
+        "agentId": "email-summary",
+        "version": 1,
+        "input": {
+          "$ref": "nodes.normalize"
+        }
+      },
+      "retries": 0,
+      "timeoutMs": 120000,
+      "version": 1
+    },
+    {
+      "id": "urgent",
+      "type": "condition",
+      "name": "Urgent items?",
+      "position": {
+        "x": 880,
+        "y": 180
+      },
+      "config": {
+        "left": {
+          "$ref": "nodes.summarize.urgentItems"
+        },
+        "operator": "notEmpty"
+      },
+      "retries": 0,
+      "timeoutMs": 120000,
+      "version": 1
+    },
+    {
+      "id": "priority",
+      "type": "map",
+      "name": "Priority digest",
+      "position": {
+        "x": 1150,
+        "y": 60
+      },
+      "config": {
+        "value": {
+          "title": "Your priority briefing",
+          "digest": {
+            "$ref": "nodes.summarize"
+          },
+          "priority": true
+        }
+      },
+      "retries": 0,
+      "timeoutMs": 120000,
+      "version": 1
+    },
+    {
+      "id": "regular",
+      "type": "map",
+      "name": "Daily digest",
+      "position": {
+        "x": 1150,
+        "y": 320
+      },
+      "config": {
+        "value": {
+          "title": "Your daily briefing",
+          "digest": {
+            "$ref": "nodes.summarize"
+          },
+          "priority": false
+        }
+      },
+      "retries": 0,
+      "timeoutMs": 120000,
+      "version": 1
+    },
+    {
+      "id": "merge",
+      "type": "merge",
+      "name": "Collect digest",
+      "position": {
+        "x": 1420,
+        "y": 180
+      },
+      "config": {
+        "mode": "first"
+      },
+      "retries": 0,
+      "timeoutMs": 120000,
+      "version": 1
+    },
+    {
+      "id": "result",
+      "type": "output",
+      "name": "Return briefing",
+      "position": {
+        "x": 1690,
+        "y": 180
+      },
+      "config": {
+        "value": {
+          "$ref": "nodes.merge"
+        }
+      },
+      "retries": 0,
+      "timeoutMs": 120000,
+      "version": 1
+    }
+  ],
+  "edges": [
+    {
+      "id": "e0",
+      "source": "trigger",
+      "target": "normalize",
+      "sourcePort": "default"
+    },
+    {
+      "id": "e1",
+      "source": "normalize",
+      "target": "summarize",
+      "sourcePort": "default"
+    },
+    {
+      "id": "e2",
+      "source": "summarize",
+      "target": "urgent",
+      "sourcePort": "default"
+    },
+    {
+      "id": "e3",
+      "source": "urgent",
+      "target": "priority",
+      "sourcePort": "true"
+    },
+    {
+      "id": "e4",
+      "source": "urgent",
+      "target": "regular",
+      "sourcePort": "false"
+    },
+    {
+      "id": "e5",
+      "source": "priority",
+      "target": "merge",
+      "sourcePort": "default"
+    },
+    {
+      "id": "e6",
+      "source": "regular",
+      "target": "merge",
+      "sourcePort": "default"
+    },
+    {
+      "id": "e7",
+      "source": "merge",
+      "target": "result",
+      "sourcePort": "default"
+    }
+  ]
+}
